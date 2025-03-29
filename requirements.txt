@@ -1,0 +1,7 @@
+google-api-python-client
+google-auth-oauthlib
+google-genai
+bs4
+markdown
+jinja2
+python-dotenv
