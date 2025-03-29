@@ -84,6 +84,26 @@ MissNoMail solves this problem of missing important career opportunities buried 
     python main.py
     ```
 
+## 🚀 Automate with GitHub Actions
+
+> [!NOTE]  
+> The script needs to be run **locally atleast once** to get the `token.json` file before it can be scheduled to be automatically run using Github Actions.
+
+1. GitHub Actions workflow
+
+    Verify that your project directory has a `.github/workflows` directory with a `actions.yml` file.
+
+    By default the script runs at 11:45 AM UTC.
+
+2. Add Secrets to GitHub
+
+    - Go to your GitHub repository → Settings → Secrets and variables → Actions.
+
+    - Click "New repository secret" and add all the secrets that are present in the `.env` file with the **same names**.
+
+    - Copy the contents of the `token.json` file and add them as a new secret in Github Actions by the name of `TOKEN_JSON`.
+
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
@@ -91,7 +111,3 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## 📜 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## ✅ To-Do
-
-- [ ] Automate and schedule the script using Github Actions
