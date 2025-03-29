@@ -24,7 +24,7 @@ jobs:
       - name: Set-Up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10.7'
+          python-version: '3.x'
 
       - name: Install Dependencies
         run: |
@@ -32,7 +32,9 @@ jobs:
           pip install -r requirements.txt
 
       - name: Set up token.json
-        run: echo "${{ secrets.TOKEN_JSON }}" > token.json
+        run: |
+          echo "${{ secrets.TOKEN_JSON }}" > token.json
+        shell: bash
 
       - name: Run Main
         run: python main.py
