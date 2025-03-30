@@ -21,7 +21,7 @@ def get_llm_client():
     return genai.Client(api_key=api_key)
 
 
-def filter_hiring_emails(email_data: List[Tuple[str, str]]) -> List[str]:
+def filter_hiring_emails(email_data: List[Tuple[str, str]]) -> List[str] | None:
     """
     Uses an LLM (API) to find any emails that could be related to internships/ job hiring and discard the rest.
     Uses the email subjects to rule out the emails that are NOT related to internships/ job hiring and return the rest.
@@ -41,9 +41,11 @@ def filter_hiring_emails(email_data: List[Tuple[str, str]]) -> List[str]:
     
     You task is to filter out any emails that does not seem to be related to internships or job hiring from reading the contents of the email subject and then return a list containing the email ids of the emails that are left, i.e that are realted to internships or job hiring.
     
-    There will be many emails with subjects related to topics like: lost and found, Hackathons, emails from university clubs/societies, workshops, seminars etc, you need to rule out such emails and DON'T include them in the reply.
+    - There will be many emails with subjects related to topics like: lost and found, Hackathons, emails from university clubs/societies, workshops, seminars etc, you need to rule out such emails and DON'T include them in the reply.
     
-    If you are unsure where the email is realted to internships or job hiring on the basis of the subject along, include that email ID in the reply regardless.
+    - If you are unsure where the email is realted to internships or job hiring on the basis of the subject along, include that email ID in the reply regardless.
+    
+    - If there are no such emails found then simply return None
     
     Input example:
         [('Invitation to Workshop on Product Design and Development by Prof. XYZ', '195d64s7h1eb0ac3'), ('Fwd: UPDATE: JPMorganChase | Online Test Instructions - Summer Internship 2026', '195h4dhefd18dbf2'), ('Fwd: Lost Book Found', '195d5b048cc11157'), ('@ UG 6th Sem and above /PG : Summer internship at NIT, Warangal, Telangana', '1912186480d8d4av')]
@@ -69,6 +71,9 @@ def filter_hiring_emails(email_data: List[Tuple[str, str]]) -> List[str]:
         )
     except HttpError as e:
         print(f"An error occured: {e}")
+
+    if response.text.strip() in ["None", None]:
+        return None
 
     email_ids = [id for id in response.text.split(" ")]
     return email_ids
