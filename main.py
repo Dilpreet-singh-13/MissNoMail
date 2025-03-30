@@ -59,9 +59,14 @@ def send_email(
         subject (str, optional): Subject of the email.
     """
 
-    load_dotenv()
-    sender_email = os.getenv("SENDER_GMAIL_ADDRESS", "")
-    receiver_email = os.getenv("RECEIVER_GMAIL_ADDRESS", "")
+    # Uncomment for local running
+    # load_dotenv()
+    # sender_email = os.getenv("SENDER_GMAIL_ADDRESS", "")
+    # receiver_email = os.getenv("RECEIVER_GMAIL_ADDRESS", "")
+
+    # For use in Github Actions
+    sender_email = os.environ.get("SENDER_GMAIL_ADDRESS", "")
+    receiver_email = os.environ.get("RECEIVER_GMAIL_ADDRESS", "")
 
     msg = MIMEMultipart("alternative")
     msg["From"] = sender_email
@@ -78,10 +83,17 @@ def send_email(
     msg.attach(MIMEText(email_text, "plain"))
     msg.attach(MIMEText(html_body, "html"))
 
+    # Uncomment for local running
+    # load_dotenv()
+    # APP_PASSWORD = os.getenv("GMAIL_APP_PASSWORD", "")
+
+    # For use in Github Actions
+    APP_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD", "")
+
     try:
         server = smtplib.SMTP("smtp.gmail.com", 587)  # connect to Gmail's SMPT server
         server.starttls()  # secure connection
-        server.login(sender_email, os.getenv("GMAIL_APP_PASSWORD", ""))
+        server.login(sender_email, APP_PASSWORD)
 
         server.send_message(msg)
         print("Email Sent Sucessfully!")

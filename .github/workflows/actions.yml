@@ -33,7 +33,7 @@ jobs:
 
       - name: Set up token.json
         run: |
-          echo "${{ secrets.TOKEN_JSON }}" > token.json
+          echo '${{ secrets.TOKEN_JSON }}' > token.json
         shell: bash
 
       - name: Run Main

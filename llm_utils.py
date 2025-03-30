@@ -11,9 +11,12 @@ from googleapiclient.errors import HttpError
 
 def get_llm_client():
     """Returns the gemini client that can be used to access the gemini API."""
+    # Uncomment for local running
+    # load_dotenv()
+    # api_key = os.getenv("GEMINI_API_KEY")
 
-    load_dotenv()
-    api_key = os.getenv("GEMINI_API_KEY")
+    # For use in Github Actions
+    api_key = os.environ.get("GEMINI_API_KEY")
 
     return genai.Client(api_key=api_key)
 
@@ -50,7 +53,13 @@ def filter_hiring_emails(email_data: List[Tuple[str, str]]) -> List[str]:
     """
 
     llm_client = get_llm_client()
-    model = os.getenv("LLM_MODEL")
+
+    # Uncomment for local running
+    # load_dotenv()
+    # model = os.getenv("LLM_MODEL")
+
+    # For use in Github Actions
+    model = os.environ.get("LLM_MODEL")
 
     try:
         response = llm_client.models.generate_content(
@@ -123,7 +132,12 @@ def extract_email_details(email_body: str) -> ResponseSchema | None:
     }
     """
     llm_client = get_llm_client()
-    model = os.getenv("LLM_MODEL")
+    # Uncomment for local running
+    # load_dotenv()
+    # model = os.getenv("LLM_MODEL")
+
+    # For use in Github Actions
+    model = os.environ.get("LLM_MODEL")
 
     try:
         response = llm_client.models.generate_content(
