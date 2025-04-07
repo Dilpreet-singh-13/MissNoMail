@@ -64,7 +64,8 @@ MissNoMail solves this problem of missing important career opportunities buried 
 
     - Enable the Gmail API from the Google Cloud console
     - Configure the OAuth Consent Screen
-    - Details of these steps are mentioned on the [Gmail API quickstart page](https://developers.google.com/workspace/gmail/api/quickstart/python).
+    - Download the OaAuth credentials and save the file as `credentials.json` in the project's root directory.
+    - Details of the above steps are mentioned on the [Gmail API quickstart page](https://developers.google.com/workspace/gmail/api/quickstart/python).
 
 > [!IMPORTANT]  
 > As this script requires a **restricted** scope, the script needs to be submitted for verification if you want it to be usable by everyone. But for personal use, you can simply add yourself as a test user under the Audience page in the Google Cloud console and use the script.

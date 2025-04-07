@@ -4,6 +4,7 @@ import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from typing import List
+from pathlib import Path
 
 import markdown
 from dotenv import load_dotenv
@@ -16,7 +17,7 @@ from llm_utils import ResponseSchema
 DAYS = 1
 
 template_str = """
-# All intern/job realted email after {{date}}
+# Intern/Job realted email after {{date}}
 
 {% for job in jobs %}
 ## {{loop.index}}. {{job.company_name}}
@@ -59,17 +60,18 @@ def send_email(
         template_content (str): the template which can be filled with the data and sent. Is converted to jinja2 Template object.
         subject (str, optional): Subject of the email.
     """
-
-    # Uncomment for local running
-    # load_dotenv()
-    # sender_email = os.getenv("SENDER_GMAIL_ADDRESS", "")
-    # receiver_email = os.getenv("RECEIVER_GMAIL_ADDRESS", "")
-    # APP_PASSWORD = os.getenv("GMAIL_APP_PASSWORD", "")
-
-    # For use in Github Actions
-    sender_email = os.environ.get("SENDER_GMAIL_ADDRESS", "")
-    receiver_email = os.environ.get("RECEIVER_GMAIL_ADDRESS", "")
-    APP_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD", "")
+    env_path = Path(".env")
+    if env_path.exists():
+        # for local running
+        load_dotenv()
+        sender_email = os.getenv("SENDER_GMAIL_ADDRESS", "")
+        receiver_email = os.getenv("RECEIVER_GMAIL_ADDRESS", "")
+        APP_PASSWORD = os.getenv("GMAIL_APP_PASSWORD", "")
+    else:
+        # For use in Github Actions
+        sender_email = os.environ.get("SENDER_GMAIL_ADDRESS", "")
+        receiver_email = os.environ.get("RECEIVER_GMAIL_ADDRESS", "")
+        APP_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD", "")
 
     msg = MIMEMultipart("alternative")
     msg["From"] = sender_email
@@ -77,18 +79,18 @@ def send_email(
     msg["Subject"] = subject
 
     date_after = (datetime.datetime.now() - datetime.timedelta(days=DAYS)).strftime(
-        "%d/%m/%Y"
+        "%Y/%m/%d"
     )
 
     if not jobs_list and not template_content:
-        email_text = f"No emails related to internship/job opportunities found after {date_after} "
+        email_text = "No relevant emails found."
     else:
         template = Template(template_content)
-        email_text = template.render(today=date_after, jobs=jobs_list)
+        email_text = template.render(date=date_after, jobs=jobs_list)
 
     html_body = markdown.markdown(
         email_text, extensions=["extra"]
-    )  # extension to get richer markdwon support
+    )  # extension for richer markdwon support
 
     msg.attach(MIMEText(email_text, "plain"))
     msg.attach(MIMEText(html_body, "html"))
@@ -110,13 +112,20 @@ def main():
     SUBJECT = "Daily python script response"
 
     email_subjects_ids = get_recent_email_subjects(DAYS)
+    if not email_subjects_ids:
+        send_email([], "", SUBJECT)
+        return
+
     filtered_email_ids = filter_hiring_emails(email_subjects_ids)
     if not filtered_email_ids:
         send_email([], "", SUBJECT)
         return
+
     job_details_list = []
     for i, email_id in enumerate(filtered_email_ids):
         email_body = get_email_body(email_id.strip())
+        if not email_body:
+            continue
         details = extract_email_details(email_body)
         if details:
             job_details_list.append(details)

@@ -47,9 +47,11 @@ def get_recent_email_subjects(past_days: int = 1) -> List[Tuple[str, str]]:
     """
 
     gmail_service = create_service()
+
     date_after = (
         datetime.datetime.now() - datetime.timedelta(days=past_days)
-    ).strftime("%d/%m/%Y")
+    ).strftime("%Y/%m/%d")
+
     try:
         result = (
             gmail_service.users()

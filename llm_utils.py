@@ -2,6 +2,7 @@ import os
 import json
 from typing import List, Tuple
 from pydantic import BaseModel, ValidationError
+from pathlib import Path
 
 from dotenv import load_dotenv
 from google import genai
@@ -11,12 +12,14 @@ from googleapiclient.errors import HttpError
 
 def get_llm_client():
     """Returns the gemini client that can be used to access the gemini API."""
-    # Uncomment for local running
-    # load_dotenv()
-    # api_key = os.getenv("GEMINI_API_KEY")
-
-    # For use in Github Actions
-    api_key = os.environ.get("GEMINI_API_KEY")
+    env_path = Path(".env")
+    if env_path.exists():
+        # local running
+        load_dotenv()
+        api_key = os.getenv("GEMINI_API_KEY")
+    else:
+        # For use in Github Actions
+        api_key = os.environ.get("GEMINI_API_KEY")
 
     return genai.Client(api_key=api_key)
 
@@ -56,12 +59,12 @@ def filter_hiring_emails(email_data: List[Tuple[str, str]]) -> List[str] | None:
 
     llm_client = get_llm_client()
 
-    # Uncomment for local running
-    # load_dotenv()
-    # model = os.getenv("LLM_MODEL")
-
-    # For use in Github Actions
-    model = os.environ.get("LLM_MODEL")
+    env_path = Path(".env")
+    if env_path.exists():
+        load_dotenv()
+        model = os.getenv("LLM_MODEL")
+    else:
+        model = os.environ.get("LLM_MODEL")
 
     try:
         response = llm_client.models.generate_content(
@@ -137,12 +140,12 @@ def extract_email_details(email_body: str) -> ResponseSchema | None:
     }
     """
     llm_client = get_llm_client()
-    # Uncomment for local running
-    # load_dotenv()
-    # model = os.getenv("LLM_MODEL")
-
-    # For use in Github Actions
-    model = os.environ.get("LLM_MODEL")
+    env_path = Path(".env")
+    if env_path.exists():
+        load_dotenv()
+        model = os.getenv("LLM_MODEL")
+    else:
+        model = os.environ.get("LLM_MODEL")
 
     try:
         response = llm_client.models.generate_content(
